@@ -1,0 +1,50 @@
+
+
+.authentication-form {
+  border: 1px solid black;
+  background: grey;
+  width: 90%;
+  margin-left: 5%;
+  position: absolute;
+  top: 25vh;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.authentication-form h2 {
+  text-align: center;
+}
+
+.authentication-form input {
+  border: 1px solid black;
+  margin: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  padding: 10px;
+  width: 90%;
+  margin-left: 5%;
+}
+
+.authentication-form button {
+  display: grid;
+  margin: 20px;
+  background: #217aff;
+  margin-left: 20px;
+  padding: 15px;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+.authentication-form .authentication-error {
+  border: 1px solid black;
+  background: #eb9696;
+  width: 90%;
+  margin-left: 5%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  padding: 5px;
+  margin: 10px auto;
+  display: none;
+}
