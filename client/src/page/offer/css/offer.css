@@ -1,0 +1,112 @@
+.item-ofr-events {
+    margin: 5px auto;
+    width: 95%;
+    background: mintcream;
+    display: flex;
+    box-shadow: 0 0 5px #000;
+    border-radius: 5px;
+    position: relative;
+}
+.item-ofr-events .icon {
+    position: absolute;
+    background: #FDF8FF;
+    right: 10px;
+    top: 5px;
+    box-shadow: 3px 3px 5px #000;
+    border-radius: 3px;
+    color: royalblue;
+}
+.item-ofr-events .image {
+    width: 40%;
+    display: flex;
+    overflow-x: auto;
+}
+.item-ofr-events .image::-webkit-scrollbar {
+    display: none;
+}
+.item-ofr-events .image img {
+    min-width: calc(100% - 10px);
+    max-width: calc(100% - 10px);
+    object-fit: cover;
+    overflow: hidden;
+    margin: 5px;
+}
+.item-ofr-events .info {
+    width: 60%;
+    padding: 5px;
+    position: relative;
+}
+.item-ofr-events .info h2 {
+    margin: 0;
+    font-family: "Trebuchet MS";
+}
+.item-ofr-events .info .icon {
+    position: absolute;
+    background: #FDF8FF;
+    right: 10px;
+    top: 5px;
+    box-shadow: 3px 3px 5px #000;
+    border-radius: 3px;
+    color: royalblue;
+}
+.item-ofr-events .info .icon:hover {
+    box-shadow: 1px 1px 2px #000;
+}
+.tim-evt-started {
+    margin: 2px 0;
+    font-size: 18px;
+    font-weight: 500;
+    animation: colorChange 2s ease-in-out infinite;;
+    display: flex;
+}
+.tim-evt-started .time {
+    margin-right: 3px;
+    margin-top: 5px;
+    animation: shake 0.5s ease-in-out infinite, colorChange 2s ease-in-out infinite;
+}
+.item-ofr-events .info  #desc {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: dimgrey;
+    margin-bottom: 25px;
+}
+.item-ofr-events .info .some-info {
+    display: flex;
+    width: calc(100% - 10px);
+    margin-top: 5px;
+    background: rgb(73, 73, 73);
+    border: 2px solid #1e42f4;
+    border-radius: 3px;
+    position: absolute;
+    bottom: 5px;
+}
+.item-ofr-events .info .some-info p {
+    margin: 0;
+    width: calc(100% / 3);
+    border-right: 2px solid #1e42f4;
+    justify-content: center;
+    display: flex;
+    color: #FDF8FF;
+    font-size: 14px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.item-ofr-events .info .some-info p .extra {
+    margin-top: 2px;
+    margin-left: 3px;
+}
+.item-ofr-events .info .some-info p:last-child {
+    border-right: none;
+}
+@keyframes shake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+    100% { transform: rotate(0deg); }
+}
+@keyframes colorChange {
+    0% { color: #ffcc00; }
+    50% { color: #ff3333; }
+    100% { color: #ffcc00; }
+}
