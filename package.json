@@ -1,0 +1,36 @@
+{
+  "name": "inrl-cart",
+  "version": "1.0.0",
+  "description": "deployable react ap",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index",
+    "server": "nodemon server/index",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "prebuild": "npm install",
+    "build": "cd client && npm install && npm run build"
+  },
+  "keywords": [],
+  "author": "I-N-R-L",
+  "license": "MIT",
+  "dependencies": {
+    "path": "^0.12.7",
+    "concurrently": "8.2.2",
+    "web-push": "3.6.7",
+    "natural": "7.0.6",
+    "fs-extra": "^11.1.1",
+    "@octokit/core": "^4.2.0",
+    "cors": "^2.8.5",
+    "nodemailer": "6.9.9",
+    "express": "^4.18.1",
+    "events": "^3.3.0",
+    "socket.io": "^4.7.5",
+    "axios": "1.6.8",
+    "express-fileupload": "^1.4.0",
+    "stream": "0.0.2",
+    "pg": "^8.11.3",
+    "sqlite3": "^5.0.11",
+    "sequelize": "^6.21.4"
+  }
+}

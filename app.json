@@ -1,0 +1,14 @@
+{
+  "name": "react",
+  "description": "react page.",
+  "keywords": [
+    "chat"
+  ],
+  "repository": "https://github.com/I-N-R-L/react",
+  "stack": "container",
+  "addons": [
+    {
+      "plan": "heroku-postgresql"
+    }
+  ]
+}
