@@ -1,0 +1,216 @@
+.main-contact {
+  width: 360px;
+  overflow: hidden;
+}
+.chatToAdminInfo {
+  background: #303030;
+  border: 1px solid #363636;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  width: 100%;
+  height: 60px;
+  align-items: center;
+  position: absolute;
+  display: inline-flex;
+  z-index: 10;
+}
+
+.chatToAdminInfo img {
+  width: 45px;
+  height: 45px;
+  border-radius: 100%;
+  border: 1px solid blue;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  margin-left: 15px;
+}
+
+.admin-info-contact {
+  display: grid;
+  margin-left: 20px;
+}
+.username-contact {
+  font-size: 20px;
+  position: relative;
+  top: 12px;
+  color: #fff;
+}
+.last-seen-contact {
+  font-size: 10px;
+  position: relative;
+  bottom: 17px;
+  color: #fff;
+}
+
+.dot-contact {
+  display: block;
+  margin-left: 80px;
+  color: #fff;
+  position: absolute;
+  float: right;
+  right: 20px;
+  clear: both;
+  width: 30px;
+  height: 30px;
+}
+
+.contact-msg {
+  width: 100%;
+  height: 100vh;
+  background: #b3ffff;
+  overflow: hidden;
+}
+.msgBox {
+  width: 100%;
+  height: calc(100vh-80px);
+  align: center;
+  background: #b3ffff;
+  overflow: auto;
+  display: block;
+  padding-top: 80px;
+}
+.user-chats {
+  float: right;
+  clear: both;
+  position: relative;
+  right: 15px;
+  width: max-content;
+  max-width: 65%;
+  padding: 5px;
+  padding-bottom: 0;
+  margin: 2px;
+  word-wrap: break-word; 
+  border: 1px solid #404040;
+  border-radius: 10px;
+  background: #445e47;
+  text-align: left;
+  color: #fff;
+}
+
+.admin-chats {
+  position: relative;
+  width: max-content;
+  max-width: 65%;
+  padding: 5px;
+  padding-bottom: 0;
+  margin: 2px;
+  word-wrap: break-word; 
+  border: 1px solid #404040;
+  border-radius: 10px;
+  background: #353136;
+  text-align: left;
+  color: #fff;
+  float: left;
+  left: 15px;
+  clear: both;
+}
+
+.user-img {
+  float: right;
+  clear: both;
+  position: relative;
+  right: 15px;
+  max-height: 30vh;
+  max-width: 65%;
+  overflow: hidden;
+  padding-bottom: 15px;
+  margin: 2px;
+  border: 1px solid #404040;
+  border-radius: 10px;
+  background: #445e47;
+  text-align: left;
+  color: #fff;
+}
+.user-images {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.admin-img {
+  float: left;
+  clear: both;
+  position: relative;
+  left: 15px;
+  width: 100px;
+  height: 100px;
+  max-width: 65%;
+  padding: 1px;
+  padding-bottom: 0;
+  margin: 2px;
+  border: 1px solid #404040;
+  border-radius: 10px;
+  background: #353136;
+  text-align: left;
+  color: #fff;
+}
+.admin-images {
+
+}
+.contact-time {
+  font-size: 10px;
+  position: relative;
+  margin-left: 5px;
+  text-align: right;
+}
+
+.a-contact-time {
+  font-size: 10px;
+  position: relative;
+  text-align: left;
+}
+
+.contact-tick {
+  width: 12px;
+  height: 12px;
+  display: inline-flex;
+  position: relative;
+  bottom: -1px;
+}
+
+.contact-got {
+  width: 15px;
+  height: 15px;
+  display: inline-flex;
+  position: relative;
+  bottom: -5px;
+}
+
+.contact-see {
+  width: 15px;
+  height: 15px;
+  display: inline-flex;
+  position: relative;
+  bottom: -5px;
+  color: #54ff54;
+}
+
+.send-contact {
+  width: 330px;
+  align-items: center;
+  margin-left: 15px;
+  display: inline-block; 
+}
+.img-upload-contact {
+  width: 42px;
+  height: 42px;
+  position: fixed;
+  bottom: 14px;
+}
+.send-message-contact {
+  min-height: 35px;
+  max-height: 100px;
+  border: 1px solid blue;
+  padding: 8px;
+  border-radius: 10px;
+  position: fixed;
+  width: 230px;
+  bottom: 18px;
+  margin-left: 50px;
+}
+
+.send-upload {
+  float: right;
+  width: 40px;
+  height: 40px;
+  right: 15px;
+  bottom: 15px;
+  position: fixed;
+}
