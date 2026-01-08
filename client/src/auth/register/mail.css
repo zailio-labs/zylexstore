@@ -1,0 +1,76 @@
+body {
+  background: #f2f2f2
+}
+
+.mail-register {
+  background: #92969c;
+  margin: auto;
+  margin-top: 50%;
+  border: 1px solid #000;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+.information-register {
+  background: cyan;
+  margin: auto;
+  margin-top: 50%;
+  border: 1px solid #000;
+  display: none;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+.information-register #message-register{
+  text-align: center;
+  font-size: 25px;
+}
+
+.information-register #status-register{
+  text-align: right;
+  font-size: 15px;
+  margin-right: 10px;
+  color: #eb6a6a;
+}
+
+.mail-register h2 {
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.mail-register input {
+  border: 1px solid #000;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  margin-left: 5%;
+  width: 90%;
+}
+
+.mail-register input::placeholder {
+  color: lightslategray;
+}
+
+.mail-register button {
+  background: #6161ff;
+  color: #10191a;
+  align: left;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #000000;
+  margin: 20px;
+}
+
+.error {
+  border:1px solid red;
+  border-radius:10px;
+  width:90%;
+  padding:5px;
+  margin-left: 5%;
+  background:#FCF6F6;
+  display: none;
+}
