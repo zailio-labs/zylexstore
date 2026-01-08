@@ -1,0 +1,87 @@
+.reset-form {
+  border: 1px solid black;
+  background: #e1e2e8;
+  border-radius: 10px;
+  padding: 20px;
+  width: 90%;
+  position: fixed;
+  top: 40%;
+  margin-left: 5%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+.reset-form h2 {
+  text-align: center;
+  margin: 20px auto;
+}
+.reset-form .reset-error {
+  display: none;
+  border: 1px solid red;
+  border-radius: 10px;
+  text-align: center;
+  padding: 10px;
+  box-shadow: 0 0 20px rgba(255,0,0);
+  background: #e65555;
+}
+.reset-form .reset-pass {
+    position: relative;
+    margin: 20px auto;
+    max-width: 400px;
+}
+
+.reset-form .reset-pass-confirm {
+    position: relative;
+    margin: 20px auto;
+    max-width: 400px;
+}
+
+.reset-form input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    background: grey;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    border:1px solid black;
+}
+
+.reset-form input::placeholder {
+  color: red;
+}
+
+.reset-form .reset-pass-hold::placeholder {
+  color: #0000db;
+}
+
+.reset-form .reset-confirm-hold::placeholder {
+  color: #0000db;
+}
+
+
+.reset-form input .red-placeholder::placeholder {
+  color: red;
+}
+.reset-form .reset-pass .icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.reset-form .reset-pass-confirm .icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.reset-form button {
+  display: block;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 20px;
+  background: #0000db;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
