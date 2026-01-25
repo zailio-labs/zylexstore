@@ -1,3 +1,19 @@
+// STRIPE WEBHOOK TEMPORARILY DISABLED
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(req: NextRequest) {
+  // Return a message that the payment system is temporarily disabled
+  return NextResponse.json(
+    { 
+      message: "Payment system is temporarily disabled",
+      status: "disabled" 
+    },
+    { status: 503 }
+  );
+}
+
+// ORIGINAL CODE COMMENTED OUT
+/*
 import { Metadata } from "@/actions/createCheckoutSession";
 import stripe from "@/lib/stripe";
 import { backendClient } from "@/sanity/lib/backendClient";
@@ -81,7 +97,6 @@ async function createOrderInSanity(
     { expand: ["data.price.product"] }
   );
 
-  // Create Sanity product references and prepare stock updates
   const sanityProducts = [];
   const stockUpdates = [];
   for (const item of lineItemsWithProduct.data) {
@@ -100,7 +115,6 @@ async function createOrderInSanity(
     });
     stockUpdates.push({ productId, quantity });
   }
-  //   Create order in Sanity
 
   const order = await backendClient.create({
     _type: "order",
@@ -138,19 +152,15 @@ async function createOrderInSanity(
       : null,
   });
 
-  // Update stock levels in Sanity
-
   await updateStockLevels(stockUpdates);
   return order;
 }
 
-// Function to update stock levels
 async function updateStockLevels(
   stockUpdates: { productId: string; quantity: number }[]
 ) {
   for (const { productId, quantity } of stockUpdates) {
     try {
-      // Fetch current stock
       const product = await backendClient.getDocument(productId);
 
       if (!product || typeof product.stock !== "number") {
@@ -160,12 +170,12 @@ async function updateStockLevels(
         continue;
       }
 
-      const newStock = Math.max(product.stock - quantity, 0); // Ensure stock does not go negative
+      const newStock = Math.max(product.stock - quantity, 0);
 
-      // Update stock in Sanity
       await backendClient.patch(productId).set({ stock: newStock }).commit();
     } catch (error) {
       console.error(`Failed to update stock for product ${productId}:`, error);
     }
   }
 }
+*/
