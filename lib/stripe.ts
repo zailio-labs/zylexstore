@@ -1,3 +1,10 @@
+// STRIPE LIBRARY TEMPORARILY DISABLED
+// This file is commented out to prevent errors when Stripe keys are missing
+
+export default null;
+
+// ORIGINAL CODE COMMENTED OUT
+/*
 import Stripe from "stripe";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -9,3 +16,4 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 export default stripe;
+*/
