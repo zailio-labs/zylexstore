@@ -1,3 +1,32 @@
+// STRIPE CHECKOUT TEMPORARILY DISABLED
+"use server";
+
+import { Address } from "@/sanity.types";
+import { CartItem } from "@/store";
+
+export interface Metadata {
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  clerkUserId?: string;
+  address?: Address | null;
+}
+
+export interface GroupedCartItems {
+  product: CartItem["product"];
+  quantity: number;
+}
+
+export async function createCheckoutSession(
+  items: GroupedCartItems[],
+  metadata: Metadata
+) {
+  // Return null or throw error to indicate payment is disabled
+  throw new Error("Payment system is temporarily disabled. Coming soon!");
+}
+
+// ORIGINAL CODE COMMENTED OUT
+/*
 "use server";
 
 import stripe from "@/lib/stripe";
@@ -24,7 +53,6 @@ export async function createCheckoutSession(
   metadata: Metadata
 ) {
   try {
-    // Retrieve existing customer or create a new one
     const customers = await stripe.customers.list({
       email: metadata.customerEmail,
       limit: 1,
@@ -79,3 +107,4 @@ export async function createCheckoutSession(
     throw error;
   }
 }
+*/
