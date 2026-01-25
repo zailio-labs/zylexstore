@@ -1,9 +1,11 @@
 "use client";
 
-import {
-  createCheckoutSession,
-  Metadata,
-} from "@/actions/createCheckoutSession";
+// STRIPE PAYMENT TEMPORARILY DISABLED
+// import {
+//   createCheckoutSession,
+//   Metadata,
+// } from "@/actions/createCheckoutSession";
+
 import Container from "@/components/Container";
 import EmptyCart from "@/components/EmptyCart";
 import NoAccess from "@/components/NoAccess";
@@ -58,7 +60,7 @@ const CartPage = () => {
       if (defaultAddress) {
         setSelectedAddress(defaultAddress);
       } else if (data.length > 0) {
-        setSelectedAddress(data[0]); // Optional: select first address if no default
+        setSelectedAddress(data[0]);
       }
     } catch (error) {
       console.log("Addresses fetching error:", error);
@@ -66,9 +68,11 @@ const CartPage = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchAddresses();
   }, []);
+
   const handleResetCart = () => {
     const confirmed = window.confirm(
       "Are you sure you want to reset your cart?"
@@ -79,26 +83,30 @@ const CartPage = () => {
     }
   };
 
+  // STRIPE CHECKOUT TEMPORARILY DISABLED
   const handleCheckout = async () => {
-    setLoading(true);
-    try {
-      const metadata: Metadata = {
-        orderNumber: crypto.randomUUID(),
-        customerName: user?.fullName ?? "Unknown",
-        customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
-        clerkUserId: user?.id,
-        address: selectedAddress,
-      };
-      const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl;
-      }
-    } catch (error) {
-      console.error("Error creating checkout session:", error);
-    } finally {
-      setLoading(false);
-    }
+    toast.error("Payment system is temporarily disabled. Coming soon!");
+    
+    // setLoading(true);
+    // try {
+    //   const metadata: Metadata = {
+    //     orderNumber: crypto.randomUUID(),
+    //     customerName: user?.fullName ?? "Unknown",
+    //     customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
+    //     clerkUserId: user?.id,
+    //     address: selectedAddress,
+    //   };
+    //   const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
+    //   if (checkoutUrl) {
+    //     window.location.href = checkoutUrl;
+    //   }
+    // } catch (error) {
+    //   console.error("Error creating checkout session:", error);
+    // } finally {
+    //   setLoading(false);
+    // }
   };
+
   return (
     <div className="bg-gray-50 pb-52 md:pb-10">
       {isSignedIn ? (
@@ -239,6 +247,9 @@ const CartPage = () => {
                         >
                           {loading ? "Please wait..." : "Proceed to Checkout"}
                         </Button>
+                        <p className="text-xs text-center text-gray-500 mt-2">
+                          Payment system temporarily disabled
+                        </p>
                       </div>
                     </div>
                     {addresses && (
@@ -317,6 +328,9 @@ const CartPage = () => {
                       >
                         {loading ? "Please wait..." : "Proceed to Checkout"}
                       </Button>
+                      <p className="text-xs text-center text-gray-500">
+                        Payment system temporarily disabled
+                      </p>
                     </div>
                   </div>
                 </div>
