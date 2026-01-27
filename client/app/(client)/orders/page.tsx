@@ -1,23 +1,62 @@
+"use client";
+
 import Container from "@/components/Container";
 import OrdersComponent from "@/components/OrdersComponent";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { getMyOrders } from "@/sanity/queries";
-import { auth } from "@clerk/nextjs/server";
+import { useAuth } from "@/context/AuthContext"; // Changed from Clerk
+import { client } from "@/sanity/lib/client";
 import { FileX } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-const OrdersPage = async () => {
-  const { userId } = await auth();
-  if (!userId) {
-    return redirect("/");
+const OrdersPage = () => {
+  const { user, isSignedIn, isLoading } = useAuth(); // Changed from Clerk
+  const router = useRouter();
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Redirect if not signed in
+    if (!isLoading && !isSignedIn) {
+      router.push("/");
+      return;
+    }
+
+    // Fetch orders when user is available
+    const fetchOrders = async () => {
+      if (!user?.id) return;
+
+      setLoading(true);
+      try {
+        const query = `*[_type == "order" && clerkUserId == $userId] | order(orderDate desc)`;
+        const data = await client.fetch(query, { userId: user.id });
+        setOrders(data || []);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchOrders();
+    }
+  }, [user, isSignedIn, isLoading, router]);
+
+  // Show loading state
+  if (isLoading || loading) {
+    return (
+      <Container className="py-10">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-lg text-gray-600">Loading...</p>
+        </div>
+      </Container>
+    );
   }
-
-  const orders = await getMyOrders(userId);
 
   return (
     <div>
