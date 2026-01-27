@@ -1,17 +1,9 @@
 "use client";
 
-// STRIPE PAYMENT TEMPORARILY DISABLED
-// import {
-//   createCheckoutSession,
-//   Metadata,
-// } from "@/actions/createCheckoutSession";
-
 import Container from "@/components/Container";
-import EmptyCart from "@/components/EmptyCart";
+// import { Metadata } from "@/actions/createCheckoutSession";
+// import { createCheckoutSession } from "@/actions/createCheckoutSession";
 import NoAccess from "@/components/NoAccess";
-import PriceFormatter from "@/components/PriceFormatter";
-import ProductSideMenu from "@/components/ProductSideMenu";
-import QuantityButtons from "@/components/QuantityButtons";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +20,7 @@ import { Address } from "@/sanity.types";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import useStore from "@/store";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useAuth } from "@/context/AuthContext"; // ONLY CHANGE: from @clerk/nextjs
 import { ShoppingBag, Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,8 +37,7 @@ const CartPage = () => {
   } = useStore();
   const [loading, setLoading] = useState(false);
   const groupedItems = useStore((state) => state.getGroupedItems());
-  const { isSignedIn } = useAuth();
-  const { user } = useUser();
+  const { isSignedIn, user } = useAuth(); // ONLY CHANGE: from useAuth() and useUser()
   const [addresses, setAddresses] = useState<Address[] | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
@@ -91,8 +82,8 @@ const CartPage = () => {
     // try {
     //   const metadata: Metadata = {
     //     orderNumber: crypto.randomUUID(),
-    //     customerName: user?.fullName ?? "Unknown",
-    //     customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
+    //     customerName: user?.name ?? "Unknown", // ONLY CHANGE: from user?.fullName
+    //     customerEmail: user?.email ?? "Unknown", // ONLY CHANGE: from user?.emailAddresses[0]?.emailAddress
     //     clerkUserId: user?.id,
     //     address: selectedAddress,
     //   };
@@ -113,231 +104,196 @@ const CartPage = () => {
         <Container>
           {groupedItems?.length ? (
             <>
-              <div className="flex items-center gap-2 py-5">
-                <ShoppingBag className="text-darkColor" />
-                <Title>Shopping Cart</Title>
-              </div>
-              <div className="grid lg:grid-cols-3 md:gap-8">
-                <div className="lg:col-span-2 rounded-lg">
-                  <div className="border bg-white rounded-md">
-                    {groupedItems?.map(({ product }) => {
-                      const itemCount = getItemCount(product?._id);
+              <Title title="Shopping cart" />
+              <div className="mt-5 md:mt-10 flex flex-col lg:flex-row justify-between gap-5">
+                {/* product */}
+                <div className="w-full lg:w-3/5 flex flex-col gap-3">
+                  <div className="bg-white p-5 rounded-md flex items-center justify-between border-b border-b-gray-300">
+                    <p className="font-semibold">
+                      Cart{" "}
+                      <span className="text-shop_light_green">
+                        ({getItemCount()}{" "}
+                        {getItemCount() > 1 ? "items" : "item"})
+                      </span>
+                    </p>
+                    <button
+                      onClick={handleResetCart}
+                      className="bg-gray-200 py-2 px-6 rounded-md hover:bg-red-600 hover:text-white hoverEffect font-semibold"
+                    >
+                      Reset cart
+                    </button>
+                  </div>
+                  {/* Map items */}
+                  <div className="flex flex-col gap-3">
+                    {groupedItems?.map((item) => {
+                      const imageUrl = item?.product?.image
+                        ? urlFor(item?.product?.image).url()
+                        : "";
                       return (
                         <div
-                          key={product?._id}
-                          className="border-b p-2.5 last:border-b-0 flex items-center justify-between gap-5"
+                          key={item?.product?._id}
+                          className="bg-white p-5 rounded-md flex flex-col sm:flex-row items-center gap-5 border-b-[1px] border-b-gray-300"
                         >
-                          <div className="flex flex-1 items-start gap-2 h-36 md:h-44">
-                            {product?.images && (
-                              <Link
-                                href={`/product/${product?.slug?.current}`}
-                                className="border p-0.5 md:p-1 mr-2 rounded-md
-                                 overflow-hidden group"
-                              >
-                                <Image
-                                  src={urlFor(product?.images[0]).url()}
-                                  alt="productImage"
-                                  width={500}
-                                  height={500}
-                                  loading="lazy"
-                                  className="w-32 md:w-40 h-32 md:h-40 object-cover group-hover:scale-105 hoverEffect"
-                                />
-                              </Link>
-                            )}
-                            <div className="h-full flex flex-1 flex-col justify-between py-1">
-                              <div className="flex flex-col gap-0.5 md:gap-1.5">
-                                <h2 className="text-base font-semibold line-clamp-1">
-                                  {product?.name}
-                                </h2>
-                                <p className="text-sm capitalize">
-                                  Variant:{" "}
-                                  <span className="font-semibold">
-                                    {product?.variant}
-                                  </span>
-                                </p>
-                                <p className="text-sm capitalize">
-                                  Status:{" "}
-                                  <span className="font-semibold">
-                                    {product?.status}
-                                  </span>
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger>
-                                      <ProductSideMenu
-                                        product={product}
-                                        className="relative top-0 right-0"
-                                      />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="font-bold">
-                                      Add to Favorite
-                                    </TooltipContent>
-                                  </Tooltip>
-                                  <Tooltip>
-                                    <TooltipTrigger>
-                                      <Trash
-                                        onClick={() => {
-                                          deleteCartProduct(product?._id);
-                                          toast.success(
-                                            "Product deleted successfully!"
-                                          );
-                                        }}
-                                        className="w-4 h-4 md:w-5 md:h-5 mr-1 text-gray-500 hover:text-red-600 hoverEffect"
-                                      />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="font-bold bg-red-600">
-                                      Delete product
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-start justify-between h-36 md:h-44 p-0.5 md:p-1">
-                            <PriceFormatter
-                              amount={(product?.price as number) * itemCount}
-                              className="font-bold text-lg"
+                          <div>
+                            <Image
+                              src={imageUrl}
+                              alt="productImage"
+                              width={200}
+                              height={200}
+                              className="w-28 h-28 object-cover rounded-md"
                             />
-                            <QuantityButtons product={product} />
+                          </div>
+                          <div className="flex flex-col md:flex-row md:items-center gap-5 flex-1">
+                            <div className="flex-1">
+                              <h2 className="text-base md:text-lg font-semibold">
+                                {item?.product?.name}
+                              </h2>
+                              <p className="text-sm text-gray-600">
+                                Unit Price $
+                                {item?.product?.price?.toFixed(2)}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                Quantity {item?.quantity}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-10">
+                              <p className="text-lg font-semibold text-shop_btn_dark_green">
+                                $
+                                {(
+                                  item?.product?.price! * item?.quantity
+                                ).toFixed(2)}
+                              </p>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button
+                                      onClick={() =>
+                                        deleteCartProduct(
+                                          item?.product?._id!
+                                        )
+                                      }
+                                      className="text-red-600 hover:text-red-800 hoverEffect"
+                                    >
+                                      <Trash className="w-5 h-5" />
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Delete product</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
                           </div>
                         </div>
                       );
                     })}
-                    <Button
-                      onClick={handleResetCart}
-                      className="m-5 font-semibold"
-                      variant="destructive"
-                    >
-                      Reset Cart
-                    </Button>
                   </div>
                 </div>
-                <div>
-                  <div className="lg:col-span-1">
-                    <div className="hidden md:inline-block w-full bg-white p-6 rounded-lg border">
-                      <h2 className="text-xl font-semibold mb-4">
-                        Order Summary
-                      </h2>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <span>SubTotal</span>
-                          <PriceFormatter amount={getSubTotalPrice()} />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span>Discount</span>
-                          <PriceFormatter
-                            amount={getSubTotalPrice() - getTotalPrice()}
-                          />
-                        </div>
-                        <Separator />
-                        <div className="flex items-center justify-between font-semibold text-lg">
-                          <span>Total</span>
-                          <PriceFormatter
-                            amount={getTotalPrice()}
-                            className="text-lg font-bold text-black"
-                          />
-                        </div>
-                        <Button
-                          className="w-full rounded-full font-semibold tracking-wide hoverEffect"
-                          size="lg"
-                          disabled={loading}
-                          onClick={handleCheckout}
-                        >
-                          {loading ? "Please wait..." : "Proceed to Checkout"}
-                        </Button>
-                        <p className="text-xs text-center text-gray-500 mt-2">
-                          Payment system temporarily disabled
+                {/* Summary */}
+                <div className="w-full lg:w-2/5 p-1 bg-white h-auto">
+                  <Card className="border-none">
+                    <CardHeader>
+                      <CardTitle>Cart totals</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <p>Subtotal</p>
+                        <p className="font-medium">
+                          ${getSubTotalPrice().toFixed(2)}
                         </p>
                       </div>
-                    </div>
-                    {addresses && (
-                      <div className="bg-white rounded-md mt-5">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Delivery Address</CardTitle>
-                          </CardHeader>
-                          <CardContent>
+                      <div className="flex items-center justify-between border-b pb-4 border-gray-300">
+                        <p>Shipping</p>
+                        <p className="font-medium">$0.00</p>
+                      </div>
+                      <Separator />
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold">Total</p>
+                        <p className="font-bold text-shop_btn_dark_green">
+                          ${getTotalPrice().toFixed(2)}
+                        </p>
+                      </div>
+
+                      {addresses && addresses?.length > 0 && (
+                        <>
+                          <Separator />
+                          <div className="py-2">
+                            <Label className="text-base font-semibold">
+                              Select Delivery Address
+                            </Label>
                             <RadioGroup
-                              defaultValue={addresses
-                                ?.find((addr) => addr.default)
-                                ?._id.toString()}
+                              value={selectedAddress?._id || ""}
+                              onValueChange={(value) => {
+                                const address = addresses?.find(
+                                  (addr) => addr._id === value
+                                );
+                                setSelectedAddress(address || null);
+                              }}
+                              className="mt-2 space-y-2 max-h-60 overflow-y-auto"
                             >
                               {addresses?.map((address) => (
                                 <div
-                                  key={address?._id}
-                                  onClick={() => setSelectedAddress(address)}
-                                  className={`flex items-center space-x-2 mb-4 cursor-pointer ${selectedAddress?._id === address?._id && "text-shop_dark_green"}`}
+                                  key={address._id}
+                                  className="flex items-start space-x-2 border rounded-lg p-3"
                                 >
                                   <RadioGroupItem
-                                    value={address?._id.toString()}
+                                    value={address._id!}
+                                    id={address._id!}
+                                    className="mt-1"
                                   />
                                   <Label
-                                    htmlFor={`address-${address?._id}`}
-                                    className="grid gap-1.5 flex-1"
+                                    htmlFor={address._id!}
+                                    className="flex-1 cursor-pointer"
                                   >
-                                    <span className="font-semibold">
-                                      {address?.name}
-                                    </span>
-                                    <span className="text-sm text-black/60">
-                                      {address.address}, {address.city},{" "}
-                                      {address.state} {address.zip}
-                                    </span>
+                                    <div className="space-y-1">
+                                      <p className="font-medium text-sm">
+                                        {address.street}
+                                      </p>
+                                      <p className="text-xs text-gray-600">
+                                        {address.city}, {address.state},{" "}
+                                        {address.zipCode}
+                                      </p>
+                                      <p className="text-xs text-gray-600">
+                                        {address.country}
+                                      </p>
+                                      {address.default && (
+                                        <span className="text-xs text-shop_btn_dark_green font-medium">
+                                          Default Address
+                                        </span>
+                                      )}
+                                    </div>
                                   </Label>
                                 </div>
                               ))}
                             </RadioGroup>
-                            <Button variant="outline" className="w-full mt-4">
-                              Add New Address
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {/* Order summary for mobile view */}
-                <div className="md:hidden fixed bottom-0 left-0 w-full bg-white pt-2">
-                  <div className="bg-white p-4 rounded-lg border mx-4">
-                    <h2>Order Summary</h2>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span>SubTotal</span>
-                        <PriceFormatter amount={getSubTotalPrice()} />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span>Discount</span>
-                        <PriceFormatter
-                          amount={getSubTotalPrice() - getTotalPrice()}
-                        />
-                      </div>
-                      <Separator />
-                      <div className="flex items-center justify-between font-semibold text-lg">
-                        <span>Total</span>
-                        <PriceFormatter
-                          amount={getTotalPrice()}
-                          className="text-lg font-bold text-black"
-                        />
-                      </div>
+                          </div>
+                        </>
+                      )}
+
                       <Button
-                        className="w-full rounded-full font-semibold tracking-wide hoverEffect"
-                        size="lg"
-                        disabled={loading}
                         onClick={handleCheckout}
+                        disabled={loading || !selectedAddress}
+                        className="w-full bg-shop_btn_dark_green hover:bg-shop_light_green hoverEffect"
                       >
-                        {loading ? "Please wait..." : "Proceed to Checkout"}
+                        {loading ? "Processing..." : "Proceed to checkout"}
                       </Button>
-                      <p className="text-xs text-center text-gray-500">
-                        Payment system temporarily disabled
-                      </p>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
             </>
           ) : (
-            <EmptyCart />
+            <div className="h-screen flex flex-col gap-5 items-center justify-center">
+              <ShoppingBag className="w-32 h-32 text-gray-300" />
+              <p className="text-xl font-semibold text-gray-500">
+                Your shopping cart is empty
+              </p>
+              <Link href={"/"}>
+                <Button className="bg-shop_btn_dark_green hover:bg-shop_light_green hoverEffect">
+                  Continue shopping
+                </Button>
+              </Link>
+            </div>
           )}
         </Container>
       ) : (
