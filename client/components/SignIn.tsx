@@ -1,14 +1,34 @@
 "use client";
-import { SignInButton } from "@clerk/nextjs";
-import React from "react";
+
+import React, { useState } from 'react';
+import { AuthModal } from './AuthModal';
 
 const SignIn = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+
+  const handleSwitchMode = () => {
+    setMode(mode === 'signin' ? 'signup' : 'signin');
+  };
+
   return (
-    <SignInButton mode="modal">
-      <button className="text-sm font-semibold hover:text-darkColor text-lightColor hover:cursor-pointer hoverEffect">
+    <>
+      <button
+        onClick={() => {
+          setMode('signin');
+          setIsOpen(true);
+        }}
+        className="text-sm font-semibold hover:text-darkColor text-lightColor hover:cursor-pointer hoverEffect"
+      >
         Login
       </button>
-    </SignInButton>
+      <AuthModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        mode={mode}
+        onSwitchMode={handleSwitchMode}
+      />
+    </>
   );
 };
 
