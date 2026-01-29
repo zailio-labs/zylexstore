@@ -6,21 +6,22 @@ const ResponseHandler = require('../utils/responseHandler');
 const Helpers = require('../utils/helpers');
 const { validators, validate } = require('../utils/validators');
 const logger = require('../utils/logger');
+const { JWT_SECRET, JWT_EXPIRE, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRE, 
 
 class AuthController {
   // Generate JWT token
   static generateToken = (user) => {
     const payload = Helpers.generateJWTPayload(user);
-    return jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE
+    return jwt.sign(payload, JWT_SECRET, {
+      expiresIn: JWT_EXPIRE
     });
   };
 
   // Generate refresh token
   static generateRefreshToken = (user) => {
     const payload = { id: user._id };
-    return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRE
+    return jwt.sign(payload, JWT_REFRESH_SECRET, {
+      expiresIn: JWT_REFRESH_EXPIRE
     });
   };
 
@@ -223,7 +224,7 @@ class AuthController {
       }
 
       // Verify refresh token
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+      const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
 
       // Find user
       const user = await User.findById(decoded.id);
