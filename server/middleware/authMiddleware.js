@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const ResponseHandler = require('../utils/responseHandler');
 const logger = require('../utils/logger');
+const JWT_SECRET = require("../comfig");
 
 class AuthMiddleware {
   // Protect routes - requires valid JWT
@@ -19,7 +20,7 @@ class AuthMiddleware {
       }
       
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, JWT_SECRET);
       
       // Check if user still exists
       const user = await User.findById(decoded.id).select('+passwordChangedAt');
@@ -74,7 +75,7 @@ class AuthMiddleware {
         token = req.headers.authorization.split(' ')[1];
         
         if (token) {
-          const decoded = jwt.verify(token, process.env.JWT_SECRET);
+          const decoded = jwt.verify(token, JWT_SECRET);
           const user = await User.findById(decoded.id);
           
           if (user && !user.changedPasswordAfter(decoded.iat)) {
