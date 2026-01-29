@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const ResponseHandler = require('../utils/responseHandler');
 const logger = require('../utils/logger');
-const JWT_SECRET = require("../comfig");
+const JWT_SECRET = require("../config");
 
 class AuthMiddleware {
   // Protect routes - requires valid JWT
