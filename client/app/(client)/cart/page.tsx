@@ -1,11 +1,5 @@
 "use client";
 
-// STRIPE PAYMENT TEMPORARILY DISABLED
-// import {
-//   createCheckoutSession,
-//   Metadata,
-// } from "@/actions/createCheckoutSession";
-
 import Container from "@/components/Container";
 import EmptyCart from "@/components/EmptyCart";
 import NoAccess from "@/components/NoAccess";
@@ -28,7 +22,7 @@ import { Address } from "@/sanity.types";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import useStore from "@/store";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useAuth } from "@/contexts/AuthContext";
 import { ShoppingBag, Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,8 +39,7 @@ const CartPage = () => {
   } = useStore();
   const [loading, setLoading] = useState(false);
   const groupedItems = useStore((state) => state.getGroupedItems());
-  const { isSignedIn } = useAuth();
-  const { user } = useUser();
+  const { user, loading: authLoading } = useAuth();
   const [addresses, setAddresses] = useState<Address[] | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
@@ -70,8 +63,10 @@ const CartPage = () => {
   };
 
   useEffect(() => {
-    fetchAddresses();
-  }, []);
+    if (user) {
+      fetchAddresses();
+    }
+  }, [user]);
 
   const handleResetCart = () => {
     const confirmed = window.confirm(
@@ -83,33 +78,24 @@ const CartPage = () => {
     }
   };
 
-  // STRIPE CHECKOUT TEMPORARILY DISABLED
   const handleCheckout = async () => {
     toast.error("Payment system is temporarily disabled. Coming soon!");
-    
-    // setLoading(true);
-    // try {
-    //   const metadata: Metadata = {
-    //     orderNumber: crypto.randomUUID(),
-    //     customerName: user?.fullName ?? "Unknown",
-    //     customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
-    //     clerkUserId: user?.id,
-    //     address: selectedAddress,
-    //   };
-    //   const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
-    //   if (checkoutUrl) {
-    //     window.location.href = checkoutUrl;
-    //   }
-    // } catch (error) {
-    //   console.error("Error creating checkout session:", error);
-    // } finally {
-    //   setLoading(false);
-    // }
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-shop_dark_green mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50 pb-52 md:pb-10">
-      {isSignedIn ? (
+      {user ? (
         <Container>
           {groupedItems?.length ? (
             <>
@@ -131,8 +117,7 @@ const CartPage = () => {
                             {product?.images && (
                               <Link
                                 href={`/product/${product?.slug?.current}`}
-                                className="border p-0.5 md:p-1 mr-2 rounded-md
-                                 overflow-hidden group"
+                                className="border p-0.5 md:p-1 mr-2 rounded-md overflow-hidden group"
                               >
                                 <Image
                                   src={urlFor(product?.images[0]).url()}
