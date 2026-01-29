@@ -1,4 +1,4 @@
-const OTP = require('../models/OTP');
+const OTP = require('../db/OTP');
 const logger = require('../utils/logger');
 const { OTP_LENGTH } = require("../../config");
 
