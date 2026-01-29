@@ -6,7 +6,7 @@ const ResponseHandler = require('../utils/responseHandler');
 const Helpers = require('../utils/helpers');
 const { validators, validate } = require('../utils/validators');
 const logger = require('../utils/logger');
-const { JWT_SECRET, JWT_EXPIRE, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRE, 
+const { JWT_SECRET, JWT_EXPIRE, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRE } = require("../config");
 
 class AuthController {
   // Generate JWT token
