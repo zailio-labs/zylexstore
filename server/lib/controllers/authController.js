@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../db/User');
 const OTPService = require('../services/otpService');
 const EmailService = require('../services/emailService');
 const ResponseHandler = require('../utils/responseHandler');
 const Helpers = require('../utils/helpers');
 const { validators, validate } = require('../utils/validators');
 const logger = require('../utils/logger');
-const { JWT_SECRET, JWT_EXPIRE, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRE } = require("../config");
+const { JWT_SECRET, JWT_EXPIRE, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRE } = require("../../config");
 
 class AuthController {
   // Generate JWT token
