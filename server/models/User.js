@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const BASE_URL = require("../config");
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -87,7 +88,7 @@ UserSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 
 // Virtual for user's full profile URL
 UserSchema.virtual('profileUrl').get(function() {
-  return `${process.env.BASE_URL}/api/users/${this._id}`;
+  return `${BASE_URL}/api/users/${this._id}`;
 });
 
 const User = mongoose.model('User', UserSchema);
