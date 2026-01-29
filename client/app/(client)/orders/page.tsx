@@ -1,3 +1,8 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { redirect } from "next/navigation";
 import Container from "@/components/Container";
 import OrdersComponent from "@/components/OrdersComponent";
 import { Button } from "@/components/ui/button";
@@ -5,19 +10,52 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getMyOrders } from "@/sanity/queries";
-import { auth } from "@clerk/nextjs/server";
 import { FileX } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import React from "react";
 
-const OrdersPage = async () => {
-  const { userId } = await auth();
-  if (!userId) {
-    return redirect("/");
+const OrdersPage = () => {
+  const { user, loading: authLoading } = useAuth();
+  const [orders, setOrders] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!user) {
+        redirect("/");
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const fetchedOrders = await getMyOrders(user._id);
+        setOrders(fetchedOrders);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!authLoading) {
+      fetchOrders();
+    }
+  }, [user, authLoading]);
+
+  if (authLoading || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-shop_dark_green mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading orders...</p>
+        </div>
+      </div>
+    );
   }
 
-  const orders = await getMyOrders(userId);
+  if (!user) {
+    redirect("/");
+    return null;
+  }
 
   return (
     <div>
