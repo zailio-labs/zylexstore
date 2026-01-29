@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
-const userController = require('../controllers/userController');
-const AuthMiddleware = require('../middleware/authMiddleware');
-const { catchAsync } = require('../middleware/errorMiddleware');
+const authController = require('../lib/controllers/authController');
+const userController = require('../lib/controllers/userController');
+const AuthMiddleware = require('../lib/middleware/authMiddleware');
+const { catchAsync } = require('../lib/middleware/errorMiddleware');
 
 // Public routes
 router.post('/signup', authController.signup);
