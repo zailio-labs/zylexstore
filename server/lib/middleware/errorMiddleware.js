@@ -1,5 +1,6 @@
 const logger = require('../utils/logger');
 const ResponseHandler = require('../utils/responseHandler');
+const NODE_ENV = require("../../config");
 
 class ErrorMiddleware {
   // Error handler middleware
