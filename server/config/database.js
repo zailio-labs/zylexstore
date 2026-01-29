@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const logger = require('../utils/logger');
+const { MONGODB_URI } = require("../config");
 
 class Database {
   constructor() {
