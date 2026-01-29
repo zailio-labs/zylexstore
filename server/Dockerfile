@@ -1,4 +1,4 @@
-FROM node:22.14.0
+FROM node:24.13.0
 WORKDIR /ZYLEXSERVER
 COPY package.json ./
 RUN npm install
