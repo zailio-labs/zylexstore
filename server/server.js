@@ -3,17 +3,13 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const dotenv = require('dotenv');
-
-// Load environment variables
-dotenv.config();
-
+const { PORT, MONGODB_URI, FRONTEND_URL, RATE_LIMIT_WINDOW_MS, RATE_LIMIT_MAX_REQUESTS } = require("./config");
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 
 // Import middleware
-const { errorHandler } = require('./middleware/errorMiddleware');
-const { requestLogger } = require('./utils/logger');
+const { errorHandler } = require('./lib/middleware/errorMiddleware');
+const { requestLogger } = require('./lib/utils/logger');
 
 // Initialize express app
 const app = express();
@@ -21,14 +17,14 @@ const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: FRONTEND_URL || 'http://localhost:3000',
   credentials: true
 }));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000, // 15 minutes
-  max: process.env.RATE_LIMIT_MAX_REQUESTS || 100, // limit each IP to 100 requests per windowMs
+  windowMs: RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000, // 15 minutes
+  max: RATE_LIMIT_MAX_REQUESTS || 100, // limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
@@ -64,15 +60,15 @@ app.use('*', (req, res) => {
 app.use(errorHandler);
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('✅ MongoDB connected successfully');
     
     // Start server
-    const PORT = process.env.PORT || 5000;
+    const PORT = process.env.PORT || 8000;
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📧 Email service: ${process.env.EMAIL_USER ? 'Configured' : 'Not configured'}`);
+      console.log(`📧 Email service: ${EMAIL_USER ? 'Configured' : 'Not configured'}`);
     });
   })
   .catch((error) => {
