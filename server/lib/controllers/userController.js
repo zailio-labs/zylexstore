@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../db/User');
 const ResponseHandler = require('../utils/responseHandler');
 const Helpers = require('../utils/helpers');
 const logger = require('../utils/logger');
