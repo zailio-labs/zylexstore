@@ -1,5 +1,6 @@
 const OTP = require('../models/OTP');
 const logger = require('../utils/logger');
+const { OTP_LENGTH } = require("../../config");
 
 class OTPService {
   async generateOTP(email, type = 'signup') {
@@ -8,7 +9,7 @@ class OTPService {
       await OTP.deleteMany({ email, type });
       
       // Generate new OTP
-      const otp = OTP.generateOTP(parseInt(process.env.OTP_LENGTH) || 6);
+      const otp = OTP.generateOTP(parseInt(OTP_LENGTH) || 6);
       
       // Save OTP to database
       const otpRecord = await OTP.create({
