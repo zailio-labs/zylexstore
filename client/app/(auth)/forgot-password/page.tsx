@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,13 @@ export default function ForgotPasswordPage() {
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Check if user is already logged in
+  useEffect(() => {
+    if (AuthAPI.isAuthenticated()) {
+      router.push('/');
+    }
+  }, [router]);
 
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();
