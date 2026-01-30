@@ -1,93 +1,101 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AuthAPI from '@/lib/api/auth';
 import toast from 'react-hot-toast';
 import Logo from '@/components/Logo';
 import Container from '@/components/Container';
 
-export default function SignUpPage() {
+export default function SignInPage() {
   const router = useRouter();
-  const [step, setStep] = useState<'signup' | 'verify'>('signup');
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  
+  // Password login state
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
+  // OTP login state
+  const [otpEmail, setOtpEmail] = useState('');
   const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
+  // Check if user is already logged in
+  useEffect(() => {
+    if (AuthAPI.isAuthenticated()) {
+      router.push('/');
     }
+  }, [router]);
 
+  const handlePasswordLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await AuthAPI.signup(formData);
+      const response = await AuthAPI.login({ email, password });
       
       if (response.success) {
-        toast.success(response.message || 'Account created! Please check your email for OTP');
-        setStep('verify');
+        toast.success('Welcome back!');
+        router.push('/');
+        router.refresh();
       } else {
-        const errorMessage = response.errors 
-          ? response.errors.map((e: any) => e.message).join(', ')
-          : response.message || 'Signup failed';
-        toast.error(errorMessage);
+        toast.error(response.message || 'Invalid email or password');
       }
     } catch (error: any) {
-      toast.error(error.message || 'Failed to create account');
+      toast.error(error.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVerifyOTP = async (e: React.FormEvent) => {
+  const handleSendOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await AuthAPI.sendOTP(otpEmail, 'login');
+      
+      if (response.success) {
+        toast.success('OTP sent to your email');
+        setOtpSent(true);
+      } else {
+        toast.error(response.message || 'Failed to send OTP');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOTPLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const response = await AuthAPI.verifyOTP({
-        email: formData.email,
+        email: otpEmail,
         otp,
-        type: 'signup',
+        type: 'login',
       });
 
       if (response.success) {
-        toast.success('Email verified successfully! Welcome to ZylexStore');
+        toast.success('Login successful!');
         router.push('/');
         router.refresh();
       } else {
         toast.error(response.message || 'Invalid OTP');
       }
     } catch (error: any) {
-      toast.error(error.message || 'Verification failed');
+      toast.error(error.message || 'Login failed');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleResendOTP = async () => {
-    try {
-      const response = await AuthAPI.sendOTP(formData.email, 'signup');
-      if (response.success) {
-        toast.success('New OTP sent to your email');
-      } else {
-        toast.error(response.message || 'Failed to resend OTP');
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to resend OTP');
     }
   };
 
@@ -98,165 +106,180 @@ export default function SignUpPage() {
           <Link href="/">
             <Logo className="text-3xl mx-auto mb-4" />
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {step === 'signup' ? 'Create your account' : 'Verify your email'}
-          </h1>
-          <p className="text-gray-600 mt-2">
-            {step === 'signup' 
-              ? 'Join ZylexStore and start shopping' 
-              : 'Enter the 6-digit code sent to your email'}
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
+          <p className="text-gray-600 mt-2">Sign in to your account</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>
-              {step === 'signup' ? 'Sign Up' : 'Email Verification'}
-            </CardTitle>
+            <CardTitle>Sign In</CardTitle>
             <CardDescription>
-              {step === 'signup' 
-                ? 'Create your account to get started' 
-                : `Code sent to ${formData.email}`}
+              Choose your preferred sign in method
             </CardDescription>
           </CardHeader>
 
-          {step === 'signup' ? (
-            <form onSubmit={handleSignup}>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="John Doe"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    minLength={2}
-                    maxLength={50}
-                  />
-                </div>
+          <Tabs defaultValue="password" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mx-6">
+              <TabsTrigger value="password">Password</TabsTrigger>
+              <TabsTrigger value="otp">OTP</TabsTrigger>
+            </TabsList>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="john@example.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                  />
-                </div>
+            <TabsContent value="password">
+              <form onSubmit={handlePasswordLogin}>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="john@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password *</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Minimum 6 characters"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required
-                    minLength={6}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">Password</Label>
+                      <Link 
+                        href="/forgot-password" 
+                        className="text-sm text-shop_dark_green hover:underline"
+                      >
+                        Forgot?
+                      </Link>
+                    </div>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                </CardContent>
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Re-enter your password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    required
-                    minLength={6}
-                  />
-                </div>
-              </CardContent>
+                <CardFooter className="flex flex-col space-y-4">
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    size="lg"
+                    disabled={loading}
+                  >
+                    {loading ? 'Signing In...' : 'Sign In'}
+                  </Button>
 
-              <CardFooter className="flex flex-col space-y-4">
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  size="lg"
-                  disabled={loading}
-                >
-                  {loading ? 'Creating Account...' : 'Create Account'}
-                </Button>
-
-                <p className="text-sm text-center text-gray-600">
-                  Already have an account?{' '}
-                  <Link href="/sign-in" className="text-shop_dark_green hover:underline font-semibold">
-                    Sign In
-                  </Link>
-                </p>
-              </CardFooter>
-            </form>
-          ) : (
-            <form onSubmit={handleVerifyOTP}>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="otp">Verification Code</Label>
-                  <Input
-                    id="otp"
-                    type="text"
-                    placeholder="000000"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    required
-                    maxLength={6}
-                    className="text-center text-2xl tracking-[0.5em] font-bold"
-                  />
-                  <p className="text-xs text-gray-500 text-center">
-                    Enter the 6-digit code from your email
+                  <p className="text-sm text-center text-gray-600">
+                    Don't have an account?{' '}
+                    <Link href="/sign-up" className="text-shop_dark_green hover:underline font-semibold">
+                      Sign Up
+                    </Link>
                   </p>
-                </div>
+                </CardFooter>
+              </form>
+            </TabsContent>
 
-                <div className="text-center">
-                  <p className="text-sm text-gray-600">
-                    Didn't receive the code?{' '}
-                    <button
-                      type="button"
-                      onClick={handleResendOTP}
-                      className="text-shop_dark_green hover:underline font-semibold"
+            <TabsContent value="otp">
+              {!otpSent ? (
+                <form onSubmit={handleSendOTP}>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="otp-email">Email</Label>
+                      <Input
+                        id="otp-email"
+                        type="email"
+                        placeholder="john@example.com"
+                        value={otpEmail}
+                        onChange={(e) => setOtpEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      We'll send a 6-digit verification code to your email
+                    </p>
+                  </CardContent>
+
+                  <CardFooter className="flex flex-col space-y-4">
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      size="lg"
+                      disabled={loading}
                     >
-                      Resend OTP
-                    </button>
-                  </p>
-                </div>
-              </CardContent>
+                      {loading ? 'Sending...' : 'Send OTP'}
+                    </Button>
 
-              <CardFooter className="flex flex-col space-y-3">
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  size="lg"
-                  disabled={loading || otp.length !== 6}
-                >
-                  {loading ? 'Verifying...' : 'Verify Email'}
-                </Button>
+                    <p className="text-sm text-center text-gray-600">
+                      Don't have an account?{' '}
+                      <Link href="/sign-up" className="text-shop_dark_green hover:underline font-semibold">
+                        Sign Up
+                      </Link>
+                    </p>
+                  </CardFooter>
+                </form>
+              ) : (
+                <form onSubmit={handleOTPLogin}>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="otp-code">Verification Code</Label>
+                      <Input
+                        id="otp-code"
+                        type="text"
+                        placeholder="000000"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        required
+                        maxLength={6}
+                        className="text-center text-2xl tracking-[0.5em] font-bold"
+                      />
+                      <p className="text-xs text-gray-500 text-center">
+                        Code sent to {otpEmail}
+                      </p>
+                    </div>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => {
-                    setStep('signup');
-                    setOtp('');
-                  }}
-                >
-                  Back to Sign Up
-                </Button>
-              </CardFooter>
-            </form>
-          )}
+                    <div className="text-center">
+                      <p className="text-sm text-gray-600">
+                        Didn't receive it?{' '}
+                        <button
+                          type="button"
+                          onClick={handleSendOTP}
+                          className="text-shop_dark_green hover:underline font-semibold"
+                        >
+                          Resend
+                        </button>
+                      </p>
+                    </div>
+                  </CardContent>
+
+                  <CardFooter className="flex flex-col space-y-3">
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      size="lg"
+                      disabled={loading || otp.length !== 6}
+                    >
+                      {loading ? 'Verifying...' : 'Sign In'}
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => {
+                        setOtpSent(false);
+                        setOtp('');
+                      }}
+                    >
+                      Back
+                    </Button>
+                  </CardFooter>
+                </form>
+              )}
+            </TabsContent>
+          </Tabs>
         </Card>
-
-        <p className="text-xs text-center text-gray-500 mt-4">
-          By signing up, you agree to our Terms of Service and Privacy Policy
-        </p>
       </Container>
     </div>
   );
