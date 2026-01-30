@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -12,11 +12,9 @@ import AuthAPI from '@/lib/api/auth';
 import toast from 'react-hot-toast';
 import Logo from '@/components/Logo';
 import Container from '@/components/Container';
-import { useAuth } from '@/contexts/AuthContext';
 
 export default function SignInPage() {
   const router = useRouter();
-  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   
   // Password login state
@@ -28,15 +26,27 @@ export default function SignInPage() {
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
 
+  // Check if user is already logged in
+  useEffect(() => {
+    if (AuthAPI.isAuthenticated()) {
+      router.push('/');
+    }
+  }, [router]);
+
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await login(email, password);
-      toast.success('Welcome back!');
-      router.push('/');
-      router.refresh();
+      const response = await AuthAPI.login({ email, password });
+      
+      if (response.success) {
+        toast.success('Welcome back!');
+        router.push('/');
+        router.refresh();
+      } else {
+        toast.error(response.message || 'Invalid email or password');
+      }
     } catch (error: any) {
       toast.error(error.message || 'Invalid email or password');
     } finally {
